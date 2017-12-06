@@ -1,5 +1,5 @@
 {
-  "name": "react-dev-utils",
+  "name": "@client/react-dev-utils",
   "version": "4.2.1",
   "description": "Webpack utilities used by Create React App",
   "repository": "facebookincubator/create-react-app",
@@ -60,5 +60,8 @@
   },
   "scripts": {
     "test": "jest"
+  },
+  "publishConfig": {
+    "registry": "http://npm/"
   }
 }
