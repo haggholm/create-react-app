@@ -67,7 +67,7 @@ const REACT_APP = /^REACT_APP_/i;
 
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
-    .filter(key => REACT_APP.test(key))
+    .filter(key => REACT_APP.test(key) || /^WSC_/.test(key))
     .reduce(
       (env, key) => {
         env[key] = process.env[key];
@@ -82,6 +82,7 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
+        WSC_DISABLE_REHYDRATE: 'true',
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

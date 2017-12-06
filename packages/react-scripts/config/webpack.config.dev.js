@@ -42,7 +42,7 @@ module.exports = {
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
   entry: [
     // We ship a few polyfills by default:
-    require.resolve('./polyfills'),
+    require.resolve('babel-polyfill'),
     // Include an alternative client for WebpackDevServer. A client's job is to
     // connect to WebpackDevServer by a socket and get notified about changes.
     // When you save a file, the client will either apply hot updates (in case
@@ -105,14 +105,14 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
     },
-    plugins: [
-      // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
-      // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-    ],
+    // plugins: [
+    // Prevents users from importing files from outside of src/ (or node_modules/).
+    // This often causes confusion because we only process files within src/ with babel.
+    // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
+    // please link the files into your node_modules/ and let module-resolution kick in.
+    // Make sure your source files are compiled, as they will not be processed in any way.
+    // new ModuleScopePlugin(paths.appSrc, path.resolve(paths.appSrc, '..', 'node_modules', '@client') [paths.appPackageJson]),
+    // ],
   },
   module: {
     strictExportPresence: true,
@@ -133,7 +133,7 @@ module.exports = {
               eslintPath: require.resolve('eslint'),
               // @remove-on-eject-begin
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
+                extends: [require.resolve('eslint-config-witkit-client')],
               },
               ignore: false,
               useEslintrc: false,
@@ -163,12 +163,20 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: paths.appSrc,
+            include: function(pth) {
+              return (
+                path.resolve(pth).startsWith(path.resolve(paths.appSrc)) ||
+                path
+                  .resolve(pth)
+                  .startsWith(path.resolve(paths.appNodeModules, '@client'))
+              );
+            },
             loader: require.resolve('babel-loader'),
             options: {
               // @remove-on-eject-begin
               babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
+              // babelrc: true,
+              presets: [require.resolve('babel-preset-witkit-client')],
               // @remove-on-eject-end
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
