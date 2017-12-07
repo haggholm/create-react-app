@@ -1,0 +1,17 @@
+before_script:
+  - node --version
+  - npm --version
+stages:
+  - publish
+npm_publish:
+  stage: publish
+  script:
+    - npm publish
+  only:
+    - master
+  tags:
+    - nodejs
+cache:
+  paths:
+    - node_modules
+  key: $CI_BUILD_REF
