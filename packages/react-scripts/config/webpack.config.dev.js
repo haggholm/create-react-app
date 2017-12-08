@@ -164,11 +164,11 @@ module.exports = {
           {
             test: /\.(js|jsx|mjs)$/,
             include: function(pth) {
+              pth = path.resolve(pth);
               return (
-                path.resolve(pth).startsWith(path.resolve(paths.appSrc)) ||
-                path
-                  .resolve(pth)
-                  .startsWith(path.resolve(paths.appNodeModules, '@client'))
+                pth.startsWith(path.resolve(paths.appSrc)) ||
+                pth.startsWith(path.resolve(paths.appNodeModules, '@client')) ||
+                pth.startsWith(path.resolve(paths.appNodeModules, '@witkit'))
               );
             },
             loader: require.resolve('babel-loader'),

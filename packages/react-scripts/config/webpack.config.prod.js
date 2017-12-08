@@ -64,7 +64,7 @@ module.exports = {
   // You can exclude the *.map files from the build during deployment.
   devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
-  entry: [require.resolve('./polyfills'), paths.appIndexJs],
+  entry: [require.resolve('babel-polyfill'), paths.appIndexJs],
   output: {
     // The build folder.
     path: paths.appBuild,
@@ -111,14 +111,14 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
     },
-    plugins: [
-      // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
-      // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-    ],
+    // plugins: [
+    //   // Prevents users from importing files from outside of src/ (or node_modules/).
+    //   // This often causes confusion because we only process files within src/ with babel.
+    //   // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
+    //   // please link the files into your node_modules/ and let module-resolution kick in.
+    //   // Make sure your source files are compiled, as they will not be processed in any way.
+    //   new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+    // ],
   },
   module: {
     strictExportPresence: true,
@@ -141,7 +141,7 @@ module.exports = {
               // TODO: consider separate config for production,
               // e.g. to enable no-console and no-debugger only in production.
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
+                extends: [require.resolve('eslint-config-witkit-client')],
               },
               ignore: false,
               useEslintrc: false,
@@ -170,12 +170,19 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: paths.appSrc,
+            include: function(pth) {
+              pth = path.resolve(pth);
+              return (
+                pth.startsWith(path.resolve(paths.appSrc)) ||
+                pth.startsWith(path.resolve(paths.appNodeModules, '@client')) ||
+                pth.startsWith(path.resolve(paths.appNodeModules, '@witkit'))
+              );
+            },
             loader: require.resolve('babel-loader'),
             options: {
               // @remove-on-eject-begin
-              babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
+              // babelrc: false,
+              presets: [require.resolve('babel-preset-witkit-client')],
               // @remove-on-eject-end
               compact: true,
             },
